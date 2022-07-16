@@ -1,0 +1,80 @@
+"""
+1.Преобразовать введённую последовательность в список
+2.Отсортировать список по возрастанию элементов в нём (через функцию)
+3.Найти номер позиции элемента, который меньше введённого пользователем числа.
+4.Добавить обработку возможных исключений.
+"""
+while True:
+    try:
+        a = list(map(int, input('Укажите произвольный набор чисел через запятую: ').split(',')))
+        # Если ошибка, будет вызвано исключение:
+    except Exception:
+        # Цикл будет повторяться до правильного ввода:
+        print("<<Ошибка!>> Пример ввода чисел: 22,5,85,14,6,40")
+    else:
+        break
+
+while True:
+    try:
+        b = list(map(int, input(f'Введите число от {min(list(a))} до {max(list(a))}: ').split(',')))
+        if min(list(b)) < min(list(a)) or min(list(b)) > max(list(a)):
+            raise ValueError
+        # Если ошибка, будет вызвано исключение:
+    except ValueError:
+        # Цикл будет повторяться до правильного ввода:
+        print(f"Нужно ввести число от {min(list(a))} до {max(list(a))}!")
+    else:
+        break
+
+# Преобразование введённой последовательности в список:
+array, num = list(map(int, a)), list(map(int, b))
+array.extend(num) # вставляем значение в конец списка
+print("Список чисел:", array)
+
+# Сортировка:
+def sortArray(array):
+    for i in range(1, len(array)):
+        x = array[i]
+        p = i
+        while p > 0 and array[p - 1] > x:
+            array[p] = array[p - 1]
+            p -= 1
+        array[p] = x
+    return array
+sortA = sortArray(array)
+print("Сортировка:", sortA)
+
+# Поиск индекса введённого числа:
+def double_search(sortA, element, left, right):
+    if left > right:  # если левая граница превысила правую,
+        return False  # значит элемент отсутствует
+
+    middle = (right + left) // 2  # находим середину
+    if element == sortA[middle]:  # если элемент в середине,
+        return middle  # возвращаем этот индекс
+    elif element < sortA[middle]:  # если элемент меньше элемента в середине
+        # рекурсивно ищем в левой половине
+        return double_search(sortA, element, left, middle - 1)
+    else:  # иначе в правой
+        return double_search(sortA, element, middle + 1, right)
+
+element = min(b) # переводим в формат числа
+idx = double_search(sortA, element, 0, len(sortA))
+
+# Обработка исключения при вводе значения = мин или макс в списке:
+if element == max(sortA):
+    Pidx = idx
+elif element == min(sortA):
+    Pidx = "- не определён, так как введённое число минимальное"
+else:
+    Pidx = idx - 1  # Индекс предыдущего числа
+
+print(f"Последний индекс в списке: {len(sortA)-1}")
+print(f"Предшествующий числу {element} индекс:", Pidx)
+
+# Укажите произвольный набор чисел через запятую: 41,25,36,47,58,23,2,6,65,13,8,34,5,95
+# Введите число от 2 до 95: 66
+# Список чисел: [41, 25, 36, 47, 58, 23, 2, 6, 65, 13, 8, 34, 5, 95, 66]
+# Сортировка: [2, 5, 6, 8, 13, 23, 25, 34, 36, 41, 47, 58, 65, 66, 95]
+# Последний индекс в списке: 14
+# Предшествующий числу 66 индекс: 12
